@@ -1,0 +1,35 @@
+# Render Blueprint — deploys both services from this repo in one go.
+# Render docs: https://render.com/docs/blueprint-spec
+#
+# Usage: push this repo to GitHub, then on render.com choose
+# "New +" -> "Blueprint" and point it at the repo. Render reads this
+# file and creates both services below automatically.
+
+services:
+  - type: web
+    name: docket-backend
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # set this manually in the Render dashboard
+      - key: CORS_ORIGINS
+        value: https://docket-frontend.onrender.com
+
+  - type: web
+    name: docket-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://docket-backend.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

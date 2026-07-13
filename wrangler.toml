@@ -1,0 +1,5 @@
+name = "docket-frontend"
+compatibility_date = "2026-07-03"
+[assets]
+directory = "./frontend/dist"
+not_found_handling = "single-page-application"
